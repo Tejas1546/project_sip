@@ -9,11 +9,13 @@ DHT dht(humt, DHTTYPE);
 float t;  //temperature
 float h;  //humidity
 int m;    //soil moisture
+int state;
 
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Serial.begin(38400);
   pinMode(pump,OUTPUT);
   digitalWrite(pump,LOW);   //on boot set pump off
   pinMode(soilp,OUTPUT);
@@ -23,13 +25,30 @@ void setup() {
 
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  delay(2000);
-  t=humitemp();
-  h=humi();
+void loop() 
+{
+  if(Serial.available() > 0)
+  {
+    state = Serial.read();
+  }
+  if (state == '0') 
+  {
+  relay();
+  Serial.println("Pump: OFF");
+  state=0; 
+  }
+  else 
+  if (state == '1') 
+  {
+  relay();
+  Serial.println("pump: ON");
+  state=1;
+  }
+  //delay(2000);
+  //t=humitemp();
+  //h=humi();
 }
-float humisens()
+float humitemp()
 {
   delay(20);
   float temp = dht.readTemperature();
@@ -61,12 +80,6 @@ int soilsens()    //reads soil moisture and has backup
   digitalWrite(soilp,HIGH);
   delay(10);
   m=analogRead(soila);
-  if(digitalRead(soild)==HIGH)
-  {
-    relay();
-    delay(10000);
-    relay();
-  }
   digitalWrite(soilp,LOW);
   return m;
 }
