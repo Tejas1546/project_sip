@@ -1,4 +1,3 @@
-//ThatsEngineering
 //Sending Data from Arduino to NodeMCU Via Serial Communication
 //NodeMCU code
 
@@ -12,8 +11,8 @@ SoftwareSerial nodemcu(12, 14);
 
 void setup() {
   // Initialize Serial port
-  Serial.begin(9600);
-  nodemcu.begin(9600);
+  Serial.begin(115200);
+  nodemcu.begin(115200);
   while (!Serial) continue;
 }
 

@@ -23,12 +23,12 @@ int hum;
 int m;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(soilp,OUTPUT);
   digitalWrite(soilp,LOW);  //on boot set soil moisture sensor off
   pinMode(soild,INPUT);
   dht.begin();
-  nodemcu.begin(9600);
+  nodemcu.begin(115200);
   delay(2000);
 
   Serial.println("Program started");

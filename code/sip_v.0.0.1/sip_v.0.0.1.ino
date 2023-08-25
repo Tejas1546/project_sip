@@ -88,54 +88,58 @@ int soilsens()    //reads soil moisture and has backup
 
 
 /*
-#define BLYNK_TEMPLATE_ID "TemplateID"
-#define BLYNK_DEVICE_NAME "Temperature Alert"
-#define BLYNK_AUTH_TOKEN "Auth Token"
+#define BLYNK_TEMPLATE_ID "TMPL3CkIZFISg"
+#define BLYNK_TEMPLATE_NAME "AGUA"
+#define BLYNK_AUTH_TOKEN "7VHdfQcSZ1dCcmt5T-d2XFeNm7vppebW"
 
 #define BLYNK_PRINT Serial
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
  
 
-#include <DHT.h>
+
 
 char auth[] = BLYNK_AUTH_TOKEN;
 
-char ssid[] = "WiFi Username";  // type your wifi name
-char pass[] = "WiFi Password";  // type your wifi password
+char ssid[] = "TS";  // type your wifi name
+char pass[] = "Tejas1238";  // type your wifi password
 
-#define DHTPIN 2          // Mention the digital pin where you connected 
-#define DHTTYPE DHT11     // DHT 11  
-DHT dht(DHTPIN, DHTTYPE);
+#define relay 2          // relay
 BlynkTimer timer;
 
 void sendSensor(){
-  float h = dht.readHumidity();
-  float t = dht.readTemperature(); // or dht.readTemperature(true) for Fahrenheit
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Failed to read from DHT sensor!");
+StaticJsonBuffer<1000> jsonBuffer;
+  JsonObject& data = jsonBuffer.parseObject(nodemcu);
+
+  if (data == JsonObject::invalid()) {
+    //Serial.println("Invalid Json Object");
+    jsonBuffer.clear();
     return;
   }
 
-  Serial.println(t);
-  Blynk.virtualWrite(V6, h);
-  Blynk.virtualWrite(V5, t);
-    Serial.print("Temperature : ");
-    Serial.print(t);
-    Serial.print("    Humidity : ");
-    Serial.println(h);
+  int hum = data["humidity"];
+  int temp = data["temperature"];
+  int m = data["soilm"];
 
+  Blynk.virtualWrite(V1, hum);
+  Blynk.virtualWrite(V2, temp);
+  Blynk.virtualWrite(V3, m);
 
-  if(t > 30){
-   // Blynk.email("shameer50@gmail.com", "Alert", "Temperature over 28C!");
-    Blynk.logEvent("temp_alert","Temp above 30 degree");
-  }
+  Serial.println("JSON Object Recieved");
+  Serial.print("Recieved Humidity:  ");
+  
+  Serial.println(hum);
+  Serial.print("Recieved Temperature:  ");
+  Serial.println(temp);
+  Serial.print("soil moisture:  ");
+  Serial.println(m);
+  Serial.println("-----------------------------------------");
+
 }
 
 void setup(){
    Serial.begin(115200);
   Blynk.begin(auth, ssid, pass);
-  dht.begin();
   timer.setInterval(2500L, sendSensor);
 }
 
